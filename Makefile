@@ -37,6 +37,8 @@ wrong_arch = 	\
 rh-cross-all-builds:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
 	$(RPMFLAGS) --target ppc64 --with cross -ba $(SPECS)/libsparse.spec
+	$(RPMFLAGS) --target s390x --with cross -ba $(SPECS)/libsparse.spec
+	$(RPMFLAGS) -ba $(SPECS)/libsparse.spec
 	# make -C $(SPARSESRC) libsparse.a
 
 clean:
