@@ -50,6 +50,8 @@ Requires:	gcc >= 4.8
 %description
 Installs libsparse.a, the static library of the sparse project.
 
+%global debug_package %{nil}
+
 # The archive does not have the form name-version, just the name.
 # The -c tells %setup to create the directory named, rather than the
 # default. The -n tells %setup the name of the directory to cd into in
