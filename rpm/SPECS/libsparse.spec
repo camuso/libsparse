@@ -36,13 +36,13 @@
 
 Name:		libsparse
 Version:	0.5.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
 License:        GPLv2
 URL:		http://git.kernel.org/cgit/devel/sparse/sparse.git/
-Source0:	%{_srcdir}/libsparse.tar.gz
+Source0:	%{_sourcedir}/libsparse.tar.gz
 
 BuildRequires:	gcc >= 4.8
 Requires:	gcc >= 4.8
@@ -62,6 +62,7 @@ Installs libsparse.a, the static library of the sparse project.
 
 %build
 cd %{_builddir}/%{name}
+patch -p1 < %{_sourcedir}/Add-Wall_off-switch.patch
 make %{?_smp_mflags} libsparse.a
 
 %install
@@ -73,5 +74,7 @@ cp %{_topdir}/BUILD/%{name}/libsparse.a $RPM_BUILD_ROOT%{_libdir}
 %{_libdir}/libsparse.a
 
 %changelog
+* Thu Mar 30 2017 Tony Camuso <tcamuso@redhat.com> - 0.5.0-2
+- Add patch to quell warnings
 * Wed Nov 16 2016 Tony Camuso <tcamuso@redhat.com> - 0.5.0-1
 - Initial spec for building libsparse.a
