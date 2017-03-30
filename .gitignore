@@ -1,7 +1,7 @@
 *.swp
+*.tar*
+*.gz
 /rpm/RPMS
 /rpm/SRPMS
 /rpm/BUILD
 /rpm/BUILDROOT
-/rpm/SOURCES
-
