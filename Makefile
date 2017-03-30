@@ -66,3 +66,4 @@ all:
 clean:
 	make -C $(SPARSESRC) clean
 	rm -rf $(BUILD)
+	find $(RPMS)/ -name "*.rpm" -exec rm -vf '{}' \;
