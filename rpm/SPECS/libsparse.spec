@@ -35,8 +35,8 @@
 ###########################################################################
 
 Name:		libsparse
-Version:	0.5.0
-Release:	2%{?dist}
+Version:	0.6.1
+Release:	1%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
@@ -62,7 +62,7 @@ Installs libsparse.a, the static library of the sparse project.
 
 %build
 cd %{_builddir}/%{name}
-patch -p1 < %{_sourcedir}/Add-Wall_off-switch.patch
+patch -p1 < %{_sourcedir}/0001-Add-Wall_off-switch-to-disable-errors-and-warnings.patch
 make %{?_smp_mflags} libsparse.a
 
 %install
@@ -74,6 +74,11 @@ cp %{_topdir}/BUILD/%{name}/libsparse.a $RPM_BUILD_ROOT%{_libdir}
 %{_libdir}/libsparse.a
 
 %changelog
+* Thu May 16 2019 Tony Camuso <tcamuso@redhat.com> - 0.6.1-1
+- Did a git pull from the upstream repo.
+- Reworked the Wall_off patch to make it apply cleanly to the
+  latest sparse pull.
+- Updated the NVR to reflect the upstream 0.6.1-rc1
 * Thu Mar 30 2017 Tony Camuso <tcamuso@redhat.com> - 0.5.0-2
 - Add patch to quell warnings
 * Wed Nov 16 2016 Tony Camuso <tcamuso@redhat.com> - 0.5.0-1
