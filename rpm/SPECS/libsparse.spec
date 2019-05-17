@@ -36,7 +36,7 @@
 
 Name:		libsparse
 Version:	0.6.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
@@ -67,13 +67,18 @@ make %{?_smp_mflags} libsparse.a
 
 %install
 mkdir -p $RPM_BUILD_ROOT%{_libdir}
+mkdir -p $RPM_BUILD_ROOT%{_includedir}/sparse
 cp %{_topdir}/BUILD/%{name}/libsparse.a $RPM_BUILD_ROOT%{_libdir}
+cp %{_topdir}/BUILD/libsparse/*.h $RPM_BUILD_ROOT%{_includedir}/sparse
 
 %files
 %defattr(-,root,root)
 %{_libdir}/libsparse.a
+%{_includedir}/sparse/*.h
 
 %changelog
+* Fri May 17 2019 Tony Camuso <tcamuso@redhat.com> - 0.6.1-2
+- Install the .h files to %{_includedir}/sparse (/usr/include/sparse)
 * Thu May 16 2019 Tony Camuso <tcamuso@redhat.com> - 0.6.1-1
 - Did a git pull from the upstream repo.
 - Reworked the Wall_off patch to make it apply cleanly to the
