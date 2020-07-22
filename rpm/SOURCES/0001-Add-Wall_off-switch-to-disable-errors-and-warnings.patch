@@ -1,32 +1,34 @@
-From 8e2d90459080fdaa538786fad257ff3e647d3b10 Mon Sep 17 00:00:00 2001
+From f934fe110d44fe4e294d543ad9f16dd00b73b0de Mon Sep 17 00:00:00 2001
 From: Tony Camuso <tcamuso@redhat.com>
-Date: Thu, 16 May 2019 13:50:25 -0400
+Date: Wed, 22 Jul 2020 13:09:17 -0400
 Subject: [PATCH] Add Wall_off switch to disable errors and warnings
+
+For sparse v0.6.2
 
 Disable all error reporting. Useful when semantic parsing checks are
 being done elsewhere or all you need is a tokenizer.
 
 Signed-off-by: Tony Camuso <tcamuso@redhat.com>
 ---
- lib.c | 27 +++++++++++++++++++++++----
- lib.h |  1 +
- 2 files changed, 24 insertions(+), 4 deletions(-)
+ lib.c     | 18 +++++++++++++++---
+ options.c | 15 +++++++++++++++
+ options.h |  1 +
+ 3 files changed, 31 insertions(+), 3 deletions(-)
 
 diff --git a/lib.c b/lib.c
-index 83e6a1e..a84a8fc 100644
+index dcbbb5b3..9d3911ca 100644
 --- a/lib.c
 +++ b/lib.c
-@@ -126,6 +126,9 @@ unsigned int hexval(unsigned int c)
- 	return retval;
+@@ -127,6 +127,8 @@ static const char *show_stream_name(struct position pos)
+ 	return name;
  }
  
-+unsigned int fmax_warnings = 100;
 +static int show_info = 1;
 +
  static void do_warn(const char *type, struct position pos, const char * fmt, va_list args)
  {
  	static char buffer[512];
-@@ -135,6 +138,11 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
+@@ -135,6 +137,11 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
  	if (pos.type == TOKEN_BAD)
  		return;
  
@@ -36,19 +38,18 @@ index 83e6a1e..a84a8fc 100644
 +	}
 +
  	vsprintf(buffer, fmt, args);	
- 	name = stream_name(pos.stream);
- 		
-@@ -143,9 +151,6 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
- 		name, pos.line, pos.pos, diag_prefix, type, buffer);
+ 
+ 	fflush(stdout);
+@@ -143,8 +150,6 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
+ 		diag_prefix, type, buffer);
  }
  
--unsigned int fmax_warnings = 100;
 -static int show_info = 1;
 -
  void info(struct position pos, const char * fmt, ...)
  {
  	va_list args;
-@@ -160,7 +165,13 @@ void info(struct position pos, const char * fmt, ...)
+@@ -159,8 +164,15 @@ void info(struct position pos, const char * fmt, ...)
  static void do_error(struct position pos, const char * fmt, va_list args)
  {
  	static int errors = 0;
@@ -61,42 +62,68 @@ index 83e6a1e..a84a8fc 100644
 +
 +	die_if_error = 1;
  	show_info = 1;
++
  	/* Shut up warnings if position is bad_token.pos */
  	if (pos.type == TOKEN_BAD)
-@@ -295,6 +306,7 @@ int Wundef = 0;
- int Wuninitialized = 1;
+ 		return;
+diff --git a/options.c b/options.c
+index a2e15bb7..9b2843ae 100644
+--- a/options.c
++++ b/options.c
+@@ -132,6 +132,7 @@ int Wuninitialized = 1;
+ int Wuniversal_initializer = 0;
  int Wunknown_attribute = 0;
  int Wvla = 1;
 +int Wall_off = 0;
  
- int dump_macro_defs = 0;
- int dump_macros_only = 0;
-@@ -691,6 +703,13 @@ static char **handle_onoff_switch(char *arg, char **next, const struct flag warn
+ ////////////////////////////////////////////////////////////////////////////////
+ // Helpers for option parsing
+@@ -270,12 +271,24 @@ static int handle_switches(const char *ori, const char *opt, const struct flag *
+ 	return 0;
+ }
+ 
++static const int warnings_size;
++
+ static char **handle_onoff_switch(char *arg, char **next, const struct flag flags[])
+ {
+ 	int flag = FLAG_ON;
  	char *p = arg + 1;
  	unsigned i;
  
++	/* This is a special case where we want to turn off all the
++	 * warning flags.
++	 */
 +	if (!strcmp(p, "all_off")) {
-+		for (i = 0; i < n; i++)
-+			*warnings[i].flag = WARNING_FORCE_OFF;
++		for (i = 0; i < warnings_size; i++)
++			*flags[i].flag = FLAG_FORCE_OFF;
 +		Wall_off = 1;
 +		return NULL;
 +	}
 +
- 	if (!strcmp(p, "sparse-all")) {
- 		for (i = 0; i < n; i++) {
- 			if (*warnings[i].flag != WARNING_FORCE_OFF && warnings[i].flag != &Wsparse_error)
-diff --git a/lib.h b/lib.h
-index 322408b..acadf77 100644
---- a/lib.h
-+++ b/lib.h
-@@ -181,6 +181,7 @@ extern int Wundef;
- extern int Wuninitialized;
+ 	// Prefixes "no" and "no-" mean to turn warning off.
+ 	if (p[0] == 'n' && p[1] == 'o') {
+ 		p += 2;
+@@ -866,6 +879,8 @@ static const struct flag warnings[] = {
+ 	{ }
+ };
+ 
++static const int warnings_size = sizeof(warnings)/sizeof(struct flag);
++
+ static char **handle_switch_W(char *arg, char **next)
+ {
+ 	char ** ret = handle_onoff_switch(arg, next, warnings);
+diff --git a/options.h b/options.h
+index 070c0dd8..a95e1b52 100644
+--- a/options.h
++++ b/options.h
+@@ -131,6 +131,7 @@ extern int Wuninitialized;
+ extern int Wuniversal_initializer;
  extern int Wunknown_attribute;
  extern int Wvla;
 +extern int Wall_off;
  
- extern int dump_macro_defs;
- extern int dump_macros_only;
+ extern char **handle_switch(char *arg, char **next);
+ extern void handle_switch_finalize(void);
 -- 
 2.18.1
 

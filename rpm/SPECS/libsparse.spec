@@ -35,8 +35,8 @@
 ###########################################################################
 
 Name:		libsparse
-Version:	0.6.1
-Release:	2%{?dist}
+Version:	0.6.2
+Release:	1%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
@@ -77,6 +77,9 @@ cp %{_topdir}/BUILD/libsparse/*.h $RPM_BUILD_ROOT%{_includedir}/sparse
 %{_includedir}/sparse/*.h
 
 %changelog
+* Wed Jul 22 2020 Tony Camuso <tcamuso@redhat.com> - 0.6.2-1
+- Integrate latest pull from sparse repo.
+- Rework on the Wall_off patch.
 * Fri May 17 2019 Tony Camuso <tcamuso@redhat.com> - 0.6.1-2
 - Install the .h files to %{_includedir}/sparse (/usr/include/sparse)
 * Thu May 16 2019 Tony Camuso <tcamuso@redhat.com> - 0.6.1-1
