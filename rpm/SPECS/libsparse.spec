@@ -62,7 +62,6 @@ Installs libsparse.a, the static library of the sparse project.
 
 %build
 cd %{_builddir}/%{name}
-patch -p1 < %{_sourcedir}/0001-Add-Wall_off-switch-to-disable-errors-and-warnings.patch
 make %{?_smp_mflags} libsparse.a
 
 %install
