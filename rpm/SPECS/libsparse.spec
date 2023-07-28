@@ -35,15 +35,14 @@
 ###########################################################################
 
 Name:		libsparse
-Version:	0.6.2
+Version:	0.6.4
 Release:	1%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
 License:        GPLv2
-URL:		http://git.kernel.org/cgit/devel/sparse/sparse.git/
-Source0:	%{_sourcedir}/libsparse.tar.gz
-
+URL:		https://git.kernel.org/pub/scm/devel/sparse/sparse.git/
+Source0:        sparse-latest.tar.xz
 BuildRequires:	gcc >= 4.8
 Requires:	gcc >= 4.8
 
@@ -61,14 +60,18 @@ Installs libsparse.a, the static library of the sparse project.
 %setup -q -c libsparse -n libsparse
 
 %build
-cd %{_builddir}/%{name}
+CFLAGS="%{optflags}"; export CFLAGS
+LDFLAGS="%{build_ldflags}"; export LDFLAGS
+cd %{_builddir}/%{name}/sparse-%{version}
+echo "**** PWD: ${PWD} ****"
 make %{?_smp_mflags} libsparse.a
 
 %install
+cd %{_builddir}/%{name}/sparse-%{version}
 mkdir -p $RPM_BUILD_ROOT%{_libdir}
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/sparse
-cp %{_topdir}/BUILD/%{name}/libsparse.a $RPM_BUILD_ROOT%{_libdir}
-cp %{_topdir}/BUILD/libsparse/*.h $RPM_BUILD_ROOT%{_includedir}/sparse
+cp %{_topdir}/BUILD/%{name}/sparse-%{version}/libsparse.a $RPM_BUILD_ROOT%{_libdir}
+cp %{_topdir}/BUILD/libsparse/sparse-%{version}/*.h $RPM_BUILD_ROOT%{_includedir}/sparse
 
 %files
 %defattr(-,root,root)
@@ -76,6 +79,10 @@ cp %{_topdir}/BUILD/libsparse/*.h $RPM_BUILD_ROOT%{_includedir}/sparse
 %{_includedir}/sparse/*.h
 
 %changelog
+* Fri Jul 28 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-1
+- Build it all in the libsparse directory instead of having a separate
+  directory for the sparse sources.
+- Omit i686, ppc64le, and s390x from the build.
 * Wed Jul 22 2020 Tony Camuso <tcamuso@redhat.com> - 0.6.2-1
 - Integrate latest pull from sparse repo.
 - Rework on the Wall_off patch.

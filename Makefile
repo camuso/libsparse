@@ -14,16 +14,14 @@
 ###########################################################################
 
 RPMBUILD	:= /usr/bin/rpmbuild
-SPARSEDIR	:= /work/sparse
-SPARSESRC	:= $(SPARSEDIR)/src
-REDHAT		:= $(SPARSEDIR)/redhat
-RPM		:= $(REDHAT)/rpm
+ARCH		:= $(shell uname -i)
+
+RPM		:= $(PWD)/rpm
 SOURCES 	:= $(RPM)/SOURCES
 BUILD		:= $(RPM)/BUILD
 RPMS		:= $(RPM)/RPMS
 SRPMS		:= $(RPM)/SRPMS
 SPECS		:= $(RPM)/SPECS
-ARCH		:= $(shell uname -i)
 
 RPMFLAGS = $(RPMBUILD) \
 	--define "_topdir	$(RPM)" \
@@ -50,16 +48,26 @@ wrong_arch = 	\
 make_tar = \
 	tar --exclude-vcs -czf $(SOURCES)/libsparse.tar.gz -C $(SPARSESRC) .
 
+get_tar = \
+	curl -L \
+	-o $(SOURCES)/sparse-latest.tar.xz \
+	https://mirrors.edge.kernel.org/pub/software/devel/sparse/dist/sparse-latest.tar.xz
+
 # These are the cross-compile targets
 # The final one will also build the src.rpm
 #
 all:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
-	$(call make_tar)
-	$(RPMFLAGS) --target i686 --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) --target s390x --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) --target ppc64 --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) --target ppc64le --with cross -bb $(SPECS)/libsparse.spec
+	# $(call make_tar)
+	$(call get_tar)
+	tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
+	find . | grep spec
+	echo "$(RPM)"
+	echo "$(SOURCES)"
+#	$(RPMFLAGS) --target i686    --with cross -bb $(SPECS)/libsparse.spec
+#	$(RPMFLAGS) --target s390x   --with cross -bb $(SPECS)/libsparse.spec
+	$(RPMFLAGS) --target ppc64   --with cross -bb $(SPECS)/libsparse.spec
+#	$(RPMFLAGS) --target ppc64le --with cross -bb $(SPECS)/libsparse.spec
 	$(RPMFLAGS) --target aarch64 --with cross -bb $(SPECS)/libsparse.spec
 	$(RPMFLAGS) -ba $(SPECS)/libsparse.spec
 
