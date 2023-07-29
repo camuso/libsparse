@@ -1,9 +1,7 @@
-From f934fe110d44fe4e294d543ad9f16dd00b73b0de Mon Sep 17 00:00:00 2001
+From a23e566ec023a87b66cb255b0e21742da79bc5de Mon Sep 17 00:00:00 2001
 From: Tony Camuso <tcamuso@redhat.com>
-Date: Wed, 22 Jul 2020 13:09:17 -0400
+Date: Sat, 29 Jul 2023 11:23:22 -0400
 Subject: [PATCH] Add Wall_off switch to disable errors and warnings
-
-For sparse v0.6.2
 
 Disable all error reporting. Useful when semantic parsing checks are
 being done elsewhere or all you need is a tokenizer.
@@ -16,10 +14,10 @@ Signed-off-by: Tony Camuso <tcamuso@redhat.com>
  3 files changed, 31 insertions(+), 3 deletions(-)
 
 diff --git a/lib.c b/lib.c
-index dcbbb5b3..9d3911ca 100644
+index e282a4f..55b1ec4 100644
 --- a/lib.c
 +++ b/lib.c
-@@ -127,6 +127,8 @@ static const char *show_stream_name(struct position pos)
+@@ -126,6 +126,8 @@ static const char *show_stream_name(struct position pos)
  	return name;
  }
  
@@ -28,7 +26,7 @@ index dcbbb5b3..9d3911ca 100644
  static void do_warn(const char *type, struct position pos, const char * fmt, va_list args)
  {
  	static char buffer[512];
-@@ -135,6 +137,11 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
+@@ -134,6 +136,11 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
  	if (pos.type == TOKEN_BAD)
  		return;
  
@@ -40,7 +38,7 @@ index dcbbb5b3..9d3911ca 100644
  	vsprintf(buffer, fmt, args);	
  
  	fflush(stdout);
-@@ -143,8 +150,6 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
+@@ -142,8 +149,6 @@ static void do_warn(const char *type, struct position pos, const char * fmt, va_
  		diag_prefix, type, buffer);
  }
  
@@ -49,7 +47,7 @@ index dcbbb5b3..9d3911ca 100644
  void info(struct position pos, const char * fmt, ...)
  {
  	va_list args;
-@@ -159,8 +164,15 @@ void info(struct position pos, const char * fmt, ...)
+@@ -158,8 +163,15 @@ void info(struct position pos, const char * fmt, ...)
  static void do_error(struct position pos, const char * fmt, va_list args)
  {
  	static int errors = 0;
@@ -67,10 +65,10 @@ index dcbbb5b3..9d3911ca 100644
  	if (pos.type == TOKEN_BAD)
  		return;
 diff --git a/options.c b/options.c
-index a2e15bb7..9b2843ae 100644
+index 6704fc8..e395565 100644
 --- a/options.c
 +++ b/options.c
-@@ -132,6 +132,7 @@ int Wuninitialized = 1;
+@@ -138,6 +138,7 @@ int Wunion_cast = 0;
  int Wuniversal_initializer = 0;
  int Wunknown_attribute = 0;
  int Wvla = 1;
@@ -78,7 +76,7 @@ index a2e15bb7..9b2843ae 100644
  
  ////////////////////////////////////////////////////////////////////////////////
  // Helpers for option parsing
-@@ -270,12 +271,24 @@ static int handle_switches(const char *ori, const char *opt, const struct flag *
+@@ -276,12 +277,24 @@ static int handle_switches(const char *ori, const char *opt, const struct flag *
  	return 0;
  }
  
@@ -103,7 +101,7 @@ index a2e15bb7..9b2843ae 100644
  	// Prefixes "no" and "no-" mean to turn warning off.
  	if (p[0] == 'n' && p[1] == 'o') {
  		p += 2;
-@@ -866,6 +879,8 @@ static const struct flag warnings[] = {
+@@ -886,6 +899,8 @@ static const struct flag warnings[] = {
  	{ }
  };
  
@@ -113,10 +111,10 @@ index a2e15bb7..9b2843ae 100644
  {
  	char ** ret = handle_onoff_switch(arg, next, warnings);
 diff --git a/options.h b/options.h
-index 070c0dd8..a95e1b52 100644
+index 0aec876..d64f902 100644
 --- a/options.h
 +++ b/options.h
-@@ -131,6 +131,7 @@ extern int Wuninitialized;
+@@ -138,6 +138,7 @@ extern int Wunion_cast;
  extern int Wuniversal_initializer;
  extern int Wunknown_attribute;
  extern int Wvla;
@@ -125,5 +123,5 @@ index 070c0dd8..a95e1b52 100644
  extern char **handle_switch(char *arg, char **next);
  extern void handle_switch_finalize(void);
 -- 
-2.18.1
+2.27.0
 
