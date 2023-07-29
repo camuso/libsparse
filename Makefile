@@ -22,6 +22,7 @@ BUILD		:= $(RPM)/BUILD
 RPMS		:= $(RPM)/RPMS
 SRPMS		:= $(RPM)/SRPMS
 SPECS		:= $(RPM)/SPECS
+SPARSESRC	:= $(wildcard $(SOURCES)/sparse-?????)
 
 RPMFLAGS = $(RPMBUILD) \
 	--define "_topdir	$(RPM)" \
@@ -68,6 +69,6 @@ all:
 	$(RPMFLAGS) -ba $(SPECS)/libsparse.spec
 
 clean:
-	make -C $(SPARSESRC) clean
+	rm -rf $(SOURCES)/sparse-*
 	rm -rf $(BUILD)
-	find $(RPMS)/ -name "*.rpm" -exec rm -vf '{}' \;
+	# find $(RPMS)/ -name "*.rpm" -exec rm -vf '{}' \;
