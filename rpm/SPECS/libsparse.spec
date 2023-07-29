@@ -8,10 +8,7 @@
 # directory macros to correspond to the build environment.
 #
 #	RPMBUILD	:= /usr/bin/rpmbuild
-#	SPARSEDIR	:= /work/sparse
-#	SPARSESRC	:= $(SPARSEDIR)/src
-#	REDHAT		:= $(SPARSEDIR)/redhat
-#	RPM		:= $(REDHAT)/rpm
+#	RPM		:= $(PWD)/rpm
 #	SOURCES 	:= $(RPM)/SOURCES
 #	BUILD		:= $(RPM)/BUILD
 #	RPMS		:= $(RPM)/RPMS
