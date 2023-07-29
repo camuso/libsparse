@@ -45,9 +45,6 @@ CROSS_PACKAGE_LIST = binutils-powerpc64-linux-gnu \
 wrong_arch = 	\
 	echo -e "\nThis arch is $(uname -i), but this make must be executed on x86_64.";
 
-make_tar = \
-	tar --exclude-vcs -czf $(SOURCES)/libsparse.tar.gz -C $(SPARSESRC) .
-
 get_tar = \
 	curl -L \
 	-o $(SOURCES)/sparse-latest.tar.xz \
@@ -58,7 +55,6 @@ get_tar = \
 #
 all:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
-	# $(call make_tar)
 	$(call get_tar)
 	tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
 	find . | grep spec
