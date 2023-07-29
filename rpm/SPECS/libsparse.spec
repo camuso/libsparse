@@ -33,7 +33,7 @@
 
 Name:		libsparse
 Version:	0.6.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
@@ -77,6 +77,8 @@ cp %{_topdir}/BUILD/libsparse/sparse-%{version}/*.h $RPM_BUILD_ROOT%{_includedir
 %{_includedir}/sparse/*.h
 
 %changelog
+* Sat Jul 29 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-2
+- Update the Wall_off patch and put it back into this spec file.
 * Fri Jul 28 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-1
 - Build it all in the libsparse directory instead of having a separate
   directory for the sparse sources.
