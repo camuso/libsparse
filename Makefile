@@ -43,8 +43,8 @@ CROSS_PACKAGE_LIST = binutils-powerpc64-linux-gnu \
 		     numactl-devel \
 		     diffstat
 
-wrong_arch = 	\
-	echo -e "\nThis arch is $(uname -i), but this make must be executed on x86_64.";
+wrong_arch = \
+	echo -e "\nThis arch is $(uname -m), but this make must be executed on x86_64.";
 
 get_tar = \
 	curl -L \
@@ -54,8 +54,11 @@ get_tar = \
 # These are the cross-compile targets
 # The final one will also build the src.rpm
 #
+# Currently, sparse only supports x86_64, ppc64, and aarch64.
+#
 all:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
+	# $(shell ./download_cross $(CROSS_PACKAGE_LIST))
 	$(call get_tar)
 	tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
 	find . | grep spec
