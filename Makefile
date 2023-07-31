@@ -14,7 +14,7 @@
 ###########################################################################
 
 RPMBUILD	:= /usr/bin/rpmbuild
-ARCH		:= $(shell uname -i)
+ARCH		:= $(shell uname -m)
 
 RPM		:= $(PWD)/rpm
 SOURCES 	:= $(RPM)/SOURCES
