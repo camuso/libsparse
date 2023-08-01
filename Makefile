@@ -58,7 +58,7 @@ get_tar = \
 #
 all:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
-	# $(shell ./download_cross $(CROSS_PACKAGE_LIST))
+	./download_cross $(CROSS_PACKAGE_LIST)
 	$(call get_tar)
 	tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
 	find . | grep spec

@@ -18,9 +18,8 @@ else
 fi
 
 # install epel-release if necessary
-
 rpm -q epel-release >& /dev/null || \
-	dnf install -y \
+	sudo dnf install -y \
 	https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 # install list of rpms for cross compile
