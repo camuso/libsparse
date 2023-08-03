@@ -60,9 +60,9 @@ Installs libsparse.a, the static library of the sparse project.
 CFLAGS="%{optflags}"; export CFLAGS
 LDFLAGS="%{build_ldflags}"; export LDFLAGS
 cd %{_builddir}/%{name}/sparse-%{version}
-echo "**** PWD: ${PWD} ****"
 patch -p1 < %{_sourcedir}/0001-Add-Wall_off-switch-to-disable-errors-and-warnings.patch
 make %{?_smp_mflags} libsparse.a
+cp -f libsparse.a %{_topdir}/../lib-%{_arch}/libsparse-%{_arch}.a
 
 %install
 cd %{_builddir}/%{name}/sparse-%{version}
