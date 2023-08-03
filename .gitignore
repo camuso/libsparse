@@ -6,3 +6,4 @@ rpm/SRPMS
 rpm/BUILD
 rpm/BUILDROOT
 rpm/SOURCES/sparse-*
+lib*/
