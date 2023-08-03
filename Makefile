@@ -13,7 +13,7 @@
 #
 ###########################################################################
 
-RPMBUILD	:= /usr/bin/rpmbuild
+RPMBUILD	:= $(shell which rpmbuild)
 ARCH		:= $(shell uname -m)
 
 RPM		:= $(PWD)/rpm
@@ -32,16 +32,18 @@ RPMFLAGS = $(RPMBUILD) \
 	--define "_rpmdir	$(RPMS)" \
 	--define "_specdir	$(SPECS)"
 
-CROSS_PACKAGE_LIST = binutils-powerpc64-linux-gnu \
-		     binutils-s390x-linux-gnu \
-		     cross-binutils-common \
-		     cross-gcc-common \
-		     gcc-powerpc64-linux-gnu \
-		     gcc-s390x-linux-gnu \
-		     glibc-static \
-		     ncurses-devel \
-		     numactl-devel \
-		     diffstat
+ARCHES := aarch64 ppc64 x86_64
+
+CROSS_PACKAGE_LIST := binutils-powerpc64-linux-gnu \
+		      binutils-s390x-linux-gnu \
+		      cross-binutils-common \
+		      cross-gcc-common \
+		      gcc-powerpc64-linux-gnu \
+		      gcc-s390x-linux-gnu \
+		      glibc-static \
+		      ncurses-devel \
+		      numactl-devel \
+		      diffstat
 
 wrong_arch = \
 	echo -e "\nThis arch is $(uname -m), but this make must be executed on x86_64.";
@@ -60,16 +62,13 @@ all:
 	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
 	./download_cross $(CROSS_PACKAGE_LIST)
 	$(call get_tar)
-	tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
-	find . | grep spec
-	echo "$(RPM)"
-	echo "$(SOURCES)"
-#	$(RPMFLAGS) --target i686    --with cross -bb $(SPECS)/libsparse.spec
-#	$(RPMFLAGS) --target s390x   --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) --target ppc64   --with cross -bb $(SPECS)/libsparse.spec
-#	$(RPMFLAGS) --target ppc64le --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) --target aarch64 --with cross -bb $(SPECS)/libsparse.spec
-	$(RPMFLAGS) -ba $(SPECS)/libsparse.spec
+	@tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
+
+	@for arch in $(ARCHES); do \
+		echo; echo "*****"; echo "arch = $$arch"; echo "*****"; \
+		[ -d $(PWD)/lib-$$arch ] || mkdir -p $(PWD)/lib-$$arch; \
+		$(RPMFLAGS) --target $$arch --with cross -bb $(SPECS)/libsparse.spec; \
+	done
 
 clean:
 	rm -rf $(SOURCES)/sparse-*
