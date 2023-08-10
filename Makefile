@@ -32,26 +32,14 @@ RPMFLAGS = $(RPMBUILD) \
 	--define "_rpmdir	$(RPMS)" \
 	--define "_specdir	$(SPECS)"
 
-ARCHES := aarch64 ppc64 x86_64
-
-CROSS_PACKAGE_LIST := binutils-powerpc64-linux-gnu \
-		      binutils-s390x-linux-gnu \
-		      cross-binutils-common \
-		      cross-gcc-common \
-		      gcc-powerpc64-linux-gnu \
-		      gcc-s390x-linux-gnu \
-		      glibc-static \
-		      ncurses-devel \
-		      numactl-devel \
-		      diffstat
-
-wrong_arch = \
-	echo -e "\nThis arch is $(uname -m), but this make must be executed on x86_64.";
-
 get_tar = \
 	curl -L \
 	-o $(SOURCES)/sparse-latest.tar.xz \
 	https://mirrors.edge.kernel.org/pub/software/devel/sparse/dist/sparse-latest.tar.xz
+
+get_version = \
+	nv=$(tar tzf $(SOURCES)/sparse-latest.tar.xz | head -n 1 | awk -F/ '{print $1}'); \
+
 
 # These are the cross-compile targets
 # The final one will also build the src.rpm
@@ -59,16 +47,11 @@ get_tar = \
 # Currently, sparse only supports x86_64, ppc64, and aarch64.
 #
 all:
-	$(shell [[ $(ARCH) == "x86_64" ]] || $(call wrong_arch))
-	./download_cross $(CROSS_PACKAGE_LIST)
 	$(call get_tar)
 	@tar -xf $(SOURCES)/sparse-latest.tar.xz -C $(SOURCES)
-
-	@for arch in $(ARCHES); do \
-		echo; echo "*****"; echo "arch = $$arch"; echo "*****"; \
-		[ -d $(PWD)/lib-$$arch ] || mkdir -p $(PWD)/lib-$$arch; \
-		$(RPMFLAGS) --target $$arch --with cross -bb $(SPECS)/libsparse.spec; \
-	done
+	nv=$$(tar -tf $(SOURCES)/sparse-latest.tar.xz | head -n 1 | cut -d'/' -f1 | cut -d'-' -f2 ); \
+	echo "nv: $$nv"; \
+	$(RPMFLAGS) --define "version $$nv" -ba $(SPECS)/libsparse.spec
 
 clean:
 	rm -rf $(SOURCES)/sparse-*

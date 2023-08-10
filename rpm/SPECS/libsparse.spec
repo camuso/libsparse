@@ -22,18 +22,17 @@
 #		--define "_builddir	$(BUILD)" \
 #		--define "_srcrpmdir	$(SRPMS)" \
 #		--define "_rpmdir	$(RPMS)" \
-#		--define "_specdir	$(SPECS)" \
+#		--define "_specdir	$(SPECS)"
 #
-# The Makefile also creates the libsparse.tar.gz archive from whatever is
-# in the $(SPARSESRC) directory. Because this archive file is not named
-# according to the rpm standard {name)-{version}, the setup macro must
-# be informed accordingly.
+# Additionally, version is defined in the primary make file after unpacking
+# the tar file and passed as a macro.
+#	rpmbuild --define "version"
 #
 ###########################################################################
 
 Name:		libsparse
-Version:	0.6.4
-Release:	2%{?dist}
+Version:	%{version}
+Release:	3%{?dist}
 Summary:	Library of Sparse Routines
 BuildRoot:	%{_topdir}/BUILDROOT/
 
@@ -62,7 +61,6 @@ LDFLAGS="%{build_ldflags}"; export LDFLAGS
 cd %{_builddir}/%{name}/sparse-%{version}
 patch -p1 < %{_sourcedir}/0001-Add-Wall_off-switch-to-disable-errors-and-warnings.patch
 make %{?_smp_mflags} libsparse.a
-cp -f libsparse.a %{_topdir}/../lib-%{_arch}/libsparse-%{_arch}.a
 
 %install
 cd %{_builddir}/%{name}/sparse-%{version}
@@ -77,6 +75,8 @@ cp %{_topdir}/BUILD/libsparse/sparse-%{version}/*.h $RPM_BUILD_ROOT%{_includedir
 %{_includedir}/sparse/*.h
 
 %changelog
+* Thu Aug 10 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-3
+- Only build for single architecture, and allow for building on any platform.
 * Sat Jul 29 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-2
 - Update the Wall_off patch and put it back into this spec file.
 * Fri Jul 28 2023 Tony Camuso <tcamuso@redhat.com> - 0.6.4-1
