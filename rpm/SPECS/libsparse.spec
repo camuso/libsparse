@@ -55,13 +55,20 @@ Installs libsparse.a, the static library of the sparse project.
 #
 %prep
 %setup -q -c libsparse -n libsparse
+# %define arch_optflags %{%{_arch}_optflags}
 
 %build
-CFLAGS="%{optflags}"; export CFLAGS
+echo "arch: %{_arch}"
+echo "arch_optflags %{arch_optflags}"
+echo "optflags: %{optflags}"
+# %{_sourcedir}/set_cflags.sh "%{arch_optflags}"
+echo "CFLAGS: $CFLAGS"
 LDFLAGS="%{build_ldflags}"; export LDFLAGS
 cd %{_builddir}/%{name}/sparse-%{version}
 patch -p1 < %{_sourcedir}/0001-Add-Wall_off-switch-to-disable-errors-and-warnings.patch
-make %{?_smp_mflags} libsparse.a
+patch -p1 < %{_sourcedir}/0002-Makefile-multi-arch.patch
+# patch -p1 < %{_sourcedir}/debug-1.patch
+make ARCH=%{_arch} %{?_smp_mflags} libsparse.a
 cp -f libsparse.a %{_topdir}/../lib-%{_arch}/libsparse-%{_arch}.a
 
 %install
@@ -93,7 +100,7 @@ cp %{_topdir}/BUILD/libsparse/sparse-%{version}/*.h $RPM_BUILD_ROOT%{_includedir
 - Reworked the Wall_off patch to make it apply cleanly to the
   latest sparse pull.
 - Updated the NVR to reflect the upstream 0.6.1-rc1
-* Thu Mar 30 2017 Tony Camuso <tcamuso@redhat.com> - 0.5.0-2
 - Add patch to quell warnings
 * Wed Nov 16 2016 Tony Camuso <tcamuso@redhat.com> - 0.5.0-1
 - Initial spec for building libsparse.a
+###########################################################################
