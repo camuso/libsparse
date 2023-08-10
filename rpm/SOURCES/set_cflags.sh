@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# rpm/SOURCES/set_cflags
+#
+
+[ -n "$MYDIR" ] || {
+	declare MYDIR=
+	MYDIR="$(dirname "$(which "$(basename "$0")")")"
+}
+
+declare usagestr=
+usagestr=$(
+cat <<EOF
+
+$(basename "$0")\0
+EOF
+)
+
+# control_c: run if user hits control-c
+#
+# Global
+#   CTLC_EXIT - bash environment variable
+#
+control_c() {
+	echo -e "\nCtrl-c detected\nCleaning up and exiting."
+	exit $CTLC_EXIT
+}
+
+main() {
+
+	CFLAGS="$($1) %{arch_cflags}"
+	export CFLAGS
+	exit 0
+}
+
+main "$@"

@@ -1,0 +1,35 @@
+diff --git a/Makefile b/Makefile
+index 4331608c..7b6bb753 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,8 +10,8 @@ ifeq ($(ARCH), x86_64)
+ 	CC = gcc
+ 	CXX = g++
+ else
+-	CC = $(ARCH)-linux-gnu-gcc
+-	CXX = $(ARCH)-linux-gnu-cpp
++	CC = $(ARCH)-gnu-gcc
++	CXX = $(ARCH)-gnu-cpp
+ endif
+ 
+ LD = $(CC)
+@@ -246,7 +246,7 @@ OBJS := $(LIB_OBJS) $(EXTRA_OBJS) $(PROGRAMS:%=%.o)
+ 
+ # Pretty print
+ V := @
+-Q := $(V:1=)
++# Q := $(V:1=)
+ 
+ ########################################################################
+ all: $(PROGRAMS)
+@@ -264,6 +264,10 @@ libsparse.a: $(LIB_OBJS)
+ 
+ cflags   += $($(*)-cflags) $(CPPFLAGS) $(CFLAGS)
+ %.o: %.c
++	@echo "CC: $(CC)  CXX: $(CXX)"
++	@echo "CFLAGS: $(CFLAGS)"
++	@echo "CPPFLAGS $(CPPFLAGS)"
++	@echo "cflags: $(cflags)"
+ 	@echo "  CC      $@"
+ 	$(Q)$(CC) $(cflags) -c -o $@ $<
+ 

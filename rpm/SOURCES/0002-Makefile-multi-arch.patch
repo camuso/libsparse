@@ -1,0 +1,36 @@
+From 9f820db1b0bd5a558510b34875083ff0ef63b686 Mon Sep 17 00:00:00 2001
+From: Tony Camuso <tcamuso@redhat.com>
+Date: Thu, 10 Aug 2023 08:54:09 -0400
+Subject: [PATCH] Makefile patch for multi-arch
+
+Signed-off-by: Tony Camuso <tcamuso@redhat.com>
+---
+ Makefile | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 84b4527f..4331608c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,9 +4,16 @@ VERSION=0.6.4
+ # The following variables can be overwritten from the command line
+ OS = linux
+ 
++ARCH ?= x86_64
++
++ifeq ($(ARCH), x86_64)
++	CC = gcc
++	CXX = g++
++else
++	CC = $(ARCH)-linux-gnu-gcc
++	CXX = $(ARCH)-linux-gnu-cpp
++endif
+ 
+-CC = gcc
+-CXX = g++
+ LD = $(CC)
+ AR = ar
+ 
+-- 
+2.27.0
+
